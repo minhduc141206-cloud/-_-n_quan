@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ô ăn quan — Phiên bản hoàn chỉnh (Quan gốc)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Ô ăn quan — PvP / PvE (AI: Dễ / Trung / Khó)</h1>
+      <div class="controls">
+        <label>Chế độ:
+          <select id="modeSelect">
+            <option value="pvp">Người vs Người</option>
+            <option value="pve">Người vs AI</option>
+          </select>
+        </label>
+        <label id="aiLabel">AI:
+          <select id="aiLevel">
+            <option value="easy">Dễ</option>
+            <option value="medium" selected>Trung bình</option>
+            <option value="hard">Khó</option>
+          </select>
+        </label>
+        <label>Chiều rải:
+          <select id="direction">
+            <option value="cw">Theo kim đồng hồ</option>
+            <option value="ccw">Ngược chiều kim đồng hồ</option>
+          </select>
+        </label>
+        <button id="diceBtn">Gieo xúc xắc</button>
+        <button id="newBtn">Trò mới</button>
+      </div>
+      <div id="statusBar">Trạng thái: sẵn sàng</div>
+    </header>
+
+    <main>
+      <div id="board" aria-label="Bàn ô ăn quan">
+        <div id="leftQuan" class="pit quan" data-id="quan-left"><div class="stones-wrap"></div></div>
+
+        <div class="middle">
+          <div class="row top" id="topRow"></div>
+          <div class="row bottom" id="bottomRow"></div>
+        </div>
+
+        <div id="rightQuan" class="pit quan" data-id="quan-right"><div class="stones-wrap"></div></div>
+      </div>
+
+      <aside id="sidebar">
+        <div class="score">
+          <div><strong>Người 1 (dưới)</strong></div>
+          <div>Dân ăn được: <span id="p1_captured_stone">0</span></div>
+          <div>Quan ăn được: <span id="p1_captured_quan">0</span></div>
+          <hr>
+          <div><strong>Người 2 (trên / AI)</strong></div>
+          <div>Dân ăn được: <span id="p2_captured_stone">0</span></div>
+          <div>Quan ăn được: <span id="p2_captured_quan">0</span></div>
+          <hr>
+          <div>Tổng quy đổi (dân): <span id="p1_score">0</span> — <span id="p2_score">0</span></div>
+        </div>
+        <div id="log" class="log">Luật tắt: Chọn ô dân bên bạn → bốc & rải. Xem luật đầy đủ trong nút Luật.</div>
+        <div style="margin-top:10px">
+          <button id="rulesBtn">Luật & Cách chơi</button>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <small>1 Quan = 5 Dân. Giao diện mô phỏng bàn gỗ; quân dân/quân quan vẽ bằng CSS.</small>
+    </footer>
+  </div>
+
+  <!-- Modal luật -->
+  <div id="rulesModal" class="modal hidden">
+    <div class="modal-inner">
+      <h2>Luật & Cách chơi</h2>
+      <ol>
+        <li>Bàn: 10 ô dân (c1..c10) + 2 ô quan (quan-left, quan-right). Mỗi ô dân bắt đầu 5 dân; mỗi ô quan có 0 dân và 1 <em>Quan gốc</em>.</li>
+        <li>Mỗi người kiểm soát 5 ô dân + 1 ô quan (Người 1 = dưới: c6..c10 + quan-right; Người 2 = trên: c1..c5 + quan-left).</li>
+        <li>Xác định người đi trước bằng gieo xúc xắc (nếu bằng thì gieo lại).</li>
+        <li>Đến lượt: chọn 1 ô dân bên mình → bốc toàn bộ quân → rải từng viên theo chiều đã chọn.</li>
+        <li>Nếu quân cuối rơi vào ô có quân (dân hoặc có cả Quan gốc) → bốc ô đó và tiếp tục rải (liên tục) — tiếp tục cho tới khi mất lượt.</li>
+        <li>Nếu quân cuối rơi vào ô trống và ô liền sau đó có quân → bạn ăn toàn bộ ô đó. Nếu ô đó chứa <strong>Quan gốc</strong>, bạn sẽ ăn Quan (tăng số Quan ăn được) — các quân dân đang nằm trong ô Quan (nếu có) vẫn chỉ là dân và được tính là dân khi ăn.</li>
+        <li>Mất lượt khi: quân cuối rơi vào ô quan; hoặc quân cuối rơi vào ô trống mà 2 ô sau trống; hoặc trường hợp đặc biệt nêu trong luật.</li>
+        <li>Nếu cả 5 ô dân của người chơi đều trống, người đó phải rải lại 5 quân từ lượng quân đã ăn được (nếu không đủ, mượn tạm).</li>
+        <li>Trò chơi kết thúc khi toàn bộ quân trên bàn đã bị ăn. Tính điểm: 1 Quan = 5 Dân.</li>
+      </ol>
+      <button id="closeRules">Đóng</button>
+    </div>
+  </div>
+
+  <!-- Kết quả -->
+  <div id="resultModal" class="modal hidden">
+    <div class="modal-inner">
+      <h2 id="resultTitle"></h2>
+      <p id="resultText"></p>
+      <button id="closeResult">OK</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
